@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络智能化决策日报 - 浙江移动创新院定制版</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --cmcc-blue: #007aff;
+            --cmcc-dark: #0056b3;
+            --bg-light: #f5f7fa;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        h1.doc-title {
+            text-align: center;
+            color: var(--cmcc-dark);
+            margin-bottom: 40px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        h2.section-title {
+            color: var(--cmcc-dark);
+            margin-top: 50px;
+            border-left: 5px solid var(--cmcc-blue);
+            padding-left: 15px;
+            font-size: 1.5em;
+        }
+        .description {
+            margin-bottom: 20px;
+            color: #666;
+            padding-left: 20px;
+        }
+        .diagram-container {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        /* --- 仿真 UI 原型样式 --- */
+        .mockup-window {
+            background-color: #f0f2f5;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            border: 1px solid #dcdfe6;
+        }
+        .mockup-header {
+            background: linear-gradient(135deg, #0056b3 0%, #007aff 100%);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .mockup-logo {
+            font-size: 1.2em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .mockup-user {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .mockup-body {
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 25px;
+        }
+        
+        /* 左侧边栏 */
+        .sidebar-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        .sidebar-title {
+            font-size: 1em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.9em;
+        }
+        .stat-val {
+            font-weight: bold;
+            color: var(--cmcc-blue);
+        }
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            background: #e6f1fc;
+            color: var(--cmcc-blue);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+        }
+
+        /* 主要内容区 */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .daily-summary {
+            background: #fff9db; /* 淡黄色背景，强调摘要 */
+            border-left: 5px solid #f1c40f;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .daily-summary h3 {
+            margin: 0 0 10px 0;
+            color: #d35400;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            border-left: 4px solid transparent;
+            transition: transform 0.2s;
+        }
+        .news-card:hover {
+            transform: translateY(-2px);
+        }
+        .card-type-strategy { border-left-color: #007aff; } /* 战略机会 */
+        .card-type-risk { border-left-color: #e74c3c; } /* 风险预警 */
+        .card-type-tech { border-left-color: #27ae60; } /* 技术突破 */
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .card-tag {
+            font-size: 0.8em;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .tag-strategy { background: #e6f1fc; color: #007aff; }
+        .tag-risk { background: #fdeaea; color: #e74c3c; }
+        .tag-tech { background: #e8f5e9; color: #27ae60; }
+
+        .card-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .card-body {
+            font-size: 0.95em;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .ai-insight {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            border: 1px dashed #ccc;
+        }
+        .ai-insight strong {
+            color: var(--cmcc-dark);
+        }
+        .ai-icon {
+            color: #9b59b6;
+            margin-right: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1 class="doc-title">网络智能化决策日报 - 方案设计图解 (行业聚焦版)</h1>
+
+    <h2 class="section-title">0. 技术架构融合：双核驱动</h2>
+    <div class="description">本方案并非单一系统的部署，而是 <strong>"BestBlogs 的深度认知大脑"</strong> 与 <strong>"CloudFlare-AI-Daily 的轻量级骨架"</strong> 的完美融合。</div>
+
+    <div class="diagram-container" style="background: linear-gradient(to bottom, #fff, #f9fbfd);">
+        <div style="display: flex; justify-content: space-around; align-items: stretch; flex-wrap: wrap; gap: 20px;">
+            
+            <!-- 骨架部分 -->
+            <div style="flex: 1; min-width: 300px; background: white; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative;">
+                <div style="text-align: center; color: #f39c12; margin-bottom: 15px;">
+                    <i class="fas fa-project-diagram fa-3x"></i>
+                </div>
+                <h3 style="text-align: center; margin-top: 0; color: #333;">CloudFlare-AI-Daily</h3>
+                <div style="text-align: center; font-weight: bold; color: #7f8c8d; margin-bottom: 15px;">"敏捷骨架 (The Skeleton)"</div>
+                <ul style="list-style: none; padding: 0; font-size: 0.9em; color: #555;">
+                    <li style="padding: 5px 0; border-bottom: 1px dashed #eee;"><i class="fas fa-check" style="color: #f39c12; margin-right: 8px;"></i>Serverless 架构 (低成本)</li>
+                    <li style="padding: 5px 0; border-bottom: 1px dashed #eee;"><i class="fas fa-check" style="color: #f39c12; margin-right: 8px;"></i>全球边缘网络 (高并发)</li>
+                    <li style="padding: 5px 0; border-bottom: 1px dashed #eee;"><i class="fas fa-check" style="color: #f39c12; margin-right: 8px;"></i>KV 分布式存储</li>
+                    <li style="padding: 5px 0;"><i class="fas fa-check" style="color: #f39c12; margin-right: 8px;"></i>Cron 定时触发器</li>
+                </ul>
+            </div>
+
+            <!-- 连接符 -->
+            <div style="display: flex; align-items: center; justify-content: center; font-size: 2em; color: #ccc;">
+                <i class="fas fa-plus"></i>
+            </div>
+
+            <!-- 大脑部分 -->
+            <div style="flex: 1; min-width: 300px; background: white; border: 1px solid #e1e4e8; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative;">
+                <div style="text-align: center; color: #e74c3c; margin-bottom: 15px;">
+                    <i class="fas fa-brain fa-3x"></i>
+                </div>
+                <h3 style="text-align: center; margin-top: 0; color: #333;">BestBlogs Workflow</h3>
+                <div style="text-align: center; font-weight: bold; color: #7f8c8d; margin-bottom: 15px;">"深度认知 (The Brain)"</div>
+                <ul style="list-style: none; padding: 0; font-size: 0.9em; color: #555;">
+                    <li style="padding: 5px 0; border-bottom: 1px dashed #eee;"><i class="fas fa-check" style="color: #e74c3c; margin-right: 8px;"></i>分段深度分析 (Segmented)</li>
+                    <li style="padding: 5px 0; border-bottom: 1px dashed #eee;"><i class="fas fa-check" style="color: #e74c3c; margin-right: 8px;"></i>反思优化环 (Reflection)</li>
+                    <li style="padding: 5px 0; border-bottom: 1px dashed #eee;"><i class="fas fa-check" style="color: #e74c3c; margin-right: 8px;"></i>多维价值打分 (Scoring)</li>
+                    <li style="padding: 5px 0;"><i class="fas fa-check" style="color: #e74c3c; margin-right: 8px;"></i>结构化输出 JSON</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div style="text-align: center; margin: 20px 0; color: #ccc;">
+            <i class="fas fa-arrow-down fa-2x"></i>
+        </div>
+
+        <!-- 最终产物 -->
+        <div style="background: #e8f4fc; border: 2px solid #007aff; border-radius: 10px; padding: 20px; text-align: center; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,122,255,0.15);">
+            <div style="color: #007aff; font-size: 2em; margin-bottom: 10px;">
+                <i class="fas fa-gem"></i>
+            </div>
+            <h3 style="margin: 0; color: #0056b3;">网络智能化决策日报 (理想态)</h3>
+            <p style="color: #555; margin-top: 10px;">具备 <strong>"运营商级数据视野"</strong> 与 <strong>"专家级深度研判"</strong> 能力的自动化情报系统。</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">1. 运营商级数据聚合链路 (详细阐述)</h2>
+    <div class="description">本系统摒弃通用资讯源，构建了专属于电信运营商的 <strong>"高信噪比"</strong> 情报网络。</div>
+    
+    <!-- 1.1 核心信源矩阵 -->
+    <h3 style="color: #0056b3; margin-top: 30px; border-bottom: 1px dashed #ccc; padding-bottom: 10px;">1.1 核心信源矩阵 (Data Source Matrix)</h3>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.9em;">
+            <thead>
+                <tr style="background-color: #f0f2f5; color: #333;">
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">信源类别</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">代表性源头 (Selected Sources)</th>
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">核心价值 (Core Value)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; color: #007aff;">
+                        <i class="fas fa-gavel"></i> 国际标准组织
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        <strong>TM Forum</strong> (自智网络 AN 项目)<br>
+                        <strong>ETSI ENI</strong> (体验式网络智能)<br>
+                        <strong>3GPP SA5</strong> (管理与编排)
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        把握顶层设计，对标 L4 自智网络演进路径，确保战略方向不跑偏。
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; color: #27ae60;">
+                        <i class="fas fa-server"></i> 头部设备商
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        <strong>Nokia Bell Labs</strong> (6G, AI-Native)<br>
+                        <strong>Ericsson Tech</strong> (认知网络)<br>
+                        <strong>Huawei MBB Lab</strong> (算力网络, ADN)
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        洞察竞品能力，了解设备侧 AI 落地的最新实践与“黑科技”预研。
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; color: #8e44ad;">
+                        <i class="fas fa-graduation-cap"></i> 学术与顶会
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        <strong>ArXiv</strong> (cs.NI + cs.AI)<br>
+                        <strong>SIGCOMM / NSDI</strong> (顶级会议)
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        捕捉算法突破（如 GNN 在拓扑优化中的应用），寻找可引入现网的创新点。
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; color: #e67e22;">
+                        <i class="fas fa-newspaper"></i> 垂直行业媒体
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        <strong>SDxCentral</strong> (SDN/NFV/AI)<br>
+                        <strong>Light Reading</strong> (Telco AI)
+                    </td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        获取行业动态、高管言论、并购信息及第三方市场分析。
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 1.2 数据获取与清洗策略 -->
+    <h3 style="color: #0056b3; margin-top: 30px; border-bottom: 1px dashed #ccc; padding-bottom: 10px;">1.2 数据获取与清洗策略 (Acquisition Strategy)</h3>
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px;">
+        <div style="flex: 1; min-width: 300px; background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px;">
+            <h4 style="margin-top: 0; color: #333;"><i class="fas fa-download" style="color: #007aff;"></i> 多协议混合采集</h4>
+            <p style="font-size: 0.9em; color: #666;">针对不同类型的信源，系统采用差异化的采集策略：</p>
+            <ul style="font-size: 0.9em; color: #555; padding-left: 20px;">
+                <li><strong>RSS/Atom Feeds</strong>: 针对博客、ArXiv 等结构化源，实现分钟级轮询。</li>
+                <li><strong>JSON API</strong>: 针对提供开放接口的平台（如 Twitter/X API, Reddit）。</li>
+                <li><strong>HTML Parsing</strong>: 针对无 Feed 网站，利用 HTMLRewriter 提取核心正文。</li>
+            </ul>
+        </div>
+        <div style="flex: 1; min-width: 300px; background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px;">
+            <h4 style="margin-top: 0; color: #333;"><i class="fas fa-filter" style="color: #e74c3c;"></i> 运营商级垂直过滤</h4>
+            <p style="font-size: 0.9em; color: #666;">在 <code>src/helpers.js</code> 中植入专用的 <strong>Carrier-Grade Filter</strong>：</p>
+            <ul style="font-size: 0.9em; color: #555; padding-left: 20px;">
+                <li><strong>正向关键词</strong>: <code>3GPP</code>, <code>NWDAF</code>, <code>Intent-based</code>, <code>CFN</code>...</li>
+                <li><strong>负向关键词</strong>: 剔除纯消费级 AI (如 "iPhone AI features")、纯硬件发布等噪音。</li>
+                <li><strong>相关性打分</strong>: 仅当内容与网络智能化强相关时才进入分析流程。</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 原始的图表部分保留，作为视觉总结 -->
+    <div class="diagram-container">
+        <div class="mermaid">
+graph TD
+    %% 样式定义
+    classDef process fill:#fff,stroke:#333,stroke-width:1px;
+    classDef db fill:#f5f5f5,stroke:#333,stroke-width:1px,shape:cylinder;
+    classDef small_llm fill:#e3f2fd,stroke:#2196f3,stroke-width:2px;
+    classDef large_llm fill:#ffebee,stroke:#f44336,stroke-width:2px;
+    classDef decision fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,shape:rhombus;
+    classDef start_end fill:#333,stroke:#333,stroke-width:2px,color:#fff,shape:circle;
+
+    %% -----------------------
+    %% 1. 文章爬取流程
+    %% -----------------------
+    subgraph Crawl_Flow [文章爬取流程]
+        %% 运营商级数据源
+        subgraph ISP_Sources [运营商级数据聚合链路]
+            Source1["国际标准组织<br/>(3GPP/ETSI/TM Forum)"]:::db
+            Source2["头部设备商<br/>(Huawei/Ericsson/Nokia)"]:::db
+            Source3["学术顶会与媒体<br/>(SIGCOMM/ArXiv/SDxCentral)"]:::db
+        end
+        
+        Fetch_RSS[定时拉取 RSS/API]:::process
+        Get_URL[获取文章 URL]:::process
+        Crawl_HTML[爬取网页 HTML]:::process
+        Extract[提取正文内容<br/>替换图片链接]:::process
+        Pending_DB[("待初评<br/>文章")]:::db
+
+        Source1 & Source2 & Source3 --> Fetch_RSS
+        Fetch_RSS --> Get_URL --> Crawl_HTML --> Extract --> Pending_DB
+    end
+
+    %% -----------------------
+    %% 2. 文章初评流程
+    %% -----------------------
+    subgraph Review_Flow [文章初评流程]
+        Pending_Fetch[定时拉取<br/>待初评文章]:::process
+        Detect_Lang[识别文章语言]:::process
+        Review_LLM["文章初评<br/>(by LLM)"]:::large_llm
+        Review_Pass{初评<br/>是否通过}:::decision
+        Processed_Mark[初评通过<br/>标记待处理]:::process
+        Discard_Mark[初评不通过<br/>标记废弃]:::process
+        Pending_Process_DB[("待处理<br/>文章")]:::db
+
+        Pending_DB --> Pending_Fetch
+        Pending_Fetch --> Detect_Lang --> Review_LLM --> Review_Pass
+        Review_Pass -- 是 --> Processed_Mark --> Pending_Process_DB
+        Review_Pass -- 否 --> Discard_Mark
+    end
+
+    %% -----------------------
+    %% 3. 文章分析流程
+    %% -----------------------
+    subgraph Analysis_Flow [文章分析流程]
+        Fetch_Process[定时拉取<br/>待处理文章]:::process
+        Is_Long{判断<br/>是否长文}:::decision
+        
+        %% 分支：原文分析
+        Raw_Analysis["原文分析<br/>(by LLM)"]:::large_llm
+        
+        %% 分支：长文分段
+        Split[原文分段]:::process
+        Seg1["分段1分析<br/>(by LLM)"]:::small_llm
+        SegN["分段n分析<br/>(by LLM)"]:::small_llm
+        Merge_Analysis["合并分析<br/>(by LLM)"]:::large_llm
+
+        %% 后处理
+        Check_Reflect["检查&反思<br/>(by LLM)"]:::large_llm
+        Classify["分类&生成标签<br/>(by LLM)"]:::large_llm
+        Score["文章评分<br/>(by LLM)"]:::large_llm
+        
+        Final_Analysis["最终分析<br/>(by LLM)"]:::large_llm
+        Analysis_Pass{分析<br/>是否通过}:::decision
+        Pending_Trans_DB[("待翻译<br/>文章")]:::db
+        Discard_Analysis[分析不通过<br/>标记废弃]:::process
+
+        Pending_Process_DB --> Fetch_Process --> Is_Long
+        
+        %% 逻辑连接
+        Is_Long -- 否 --> Raw_Analysis
+        Is_Long -- 是 --> Split
+        Split --> Seg1 & SegN
+        Seg1 & SegN --> Merge_Analysis
+        
+        Raw_Analysis --> Check_Reflect
+        Merge_Analysis --> Check_Reflect
+        
+        Raw_Analysis --> Classify
+        Raw_Analysis --> Score
+        Merge_Analysis --> Classify
+        Merge_Analysis --> Score
+
+        Check_Reflect --> Final_Analysis
+        Classify --> Final_Analysis
+        Score --> Final_Analysis
+        
+        Final_Analysis --> Analysis_Pass
+        Analysis_Pass -- 是 --> Pending_Trans_DB
+        Analysis_Pass -- 否 --> Discard_Analysis
+    end
+
+    %% -----------------------
+    %% 4. 分析结果翻译流程
+    %% -----------------------
+    subgraph Trans_Flow [分析结果翻译流程]
+        Fetch_Trans[定时拉取<br/>待翻译文章]:::process
+        Identify_Terms["识别专有名词<br/>(by LLM)"]:::small_llm
+        Direct_Trans["直接翻译<br/>(by LLM)"]:::small_llm
+        Critique["指出翻译问题<br/>(by LLM)"]:::large_llm
+        Final_Trans["最终翻译<br/>(by LLM)"]:::large_llm
+        Done_DB[("已处理<br/>文章")]:::db
+
+        Pending_Trans_DB --> Fetch_Trans --> Identify_Terms --> Direct_Trans --> Critique --> Final_Trans --> Done_DB
+    end
+
+    %% 图例
+    subgraph Legend [图例说明]
+        L1["使用中小模型<br/>(追求性价比)"]:::small_llm
+        L2["使用中高模型<br/>(追求效果)"]:::large_llm
+    end
+        </div>
+    </div>
+
+    <h2 class="section-title">2. 创新院决策日报全景</h2>
+    <div class="description">围绕"自智网络"与"算力网络"双轮驱动的内容架构。</div>
+    <div class="diagram-container">
+        <div class="mermaid">
+mindmap
+  root((网络智能部<br/>决策日报))
+    核心研判
+      决策参考摘要
+        ::icon(fa fa-lightbulb)
+        一句话情报速读
+        对标集团L4演进
+        创新院落地建议
+      创新仪表盘
+        ::icon(fa fa-tachometer)
+        前沿技术成熟度
+        标准立项机会点
+        竞对专利布局
+    生产网应用
+      无线网 (RAN)
+        ::icon(fa fa-wifi)
+        RIC 智能优化
+        节能降耗算法
+      核心网 (CN)
+        ::icon(fa fa-server)
+        NWDAF 数据分析
+        故障自愈 (Self-Healing)
+      算力网络 (CFN)
+        ::icon(fa fa-cloud)
+        算网大脑
+        任务调度优化
+    前沿与标准
+      国际标准追踪
+        ::icon(fa fa-book)
+        3GPP R18/R19
+        TM Forum ODA
+      网络大模型
+        ::icon(fa fa-brain)
+        NetGPT 训练进展
+        多模态运维助手
+        </div>
+    </div>
+
+    <h2 class="section-title">3. 界面高保真原型 (High-Fidelity UI Prototype)</h2>
+    <div class="description">领导视角：这就是最终交付的网页效果。</div>
+    
+    <!-- 仿真浏览器窗口 -->
+    <div class="mockup-window">
+        <!-- 仿真头部 -->
+        <div class="mockup-header">
+            <div class="mockup-logo">
+                <i class="fas fa-network-wired"></i>
+                浙江移动创新研究院 | 网络智能部决策日报
+            </div>
+            <div class="mockup-user">
+                <i class="far fa-calendar-alt"></i> 2024年05月20日 | 星期一
+            </div>
+        </div>
+
+        <div class="mockup-body">
+            <!-- 左侧边栏 -->
+            <div class="mockup-sidebar">
+                <div class="sidebar-card">
+                    <div class="sidebar-title">📊 创新态势仪表盘</div>
+                    <div class="stat-item">
+                        <span>L4关键技术突破</span>
+                        <span class="stat-val">3项</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>标准立项机会</span>
+                        <span class="stat-val">2个</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>竞对专利预警</span>
+                        <span class="stat-val" style="color: #e74c3c;">1项</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <div class="sidebar-title">🏷️ 重点关注领域</div>
+                    <div class="tag-cloud">
+                        <span class="tag">#自智网络L4</span>
+                        <span class="tag">#算力路由</span>
+                        <span class="tag">#通感一体</span>
+                        <span class="tag">#NWDAF</span>
+                        <span class="tag">#意图驱动</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧主要内容 -->
+            <div class="main-content">
+                
+                <!-- 核心决策摘要 -->
+                <div class="daily-summary">
+                    <h3><i class="fas fa-lightbulb"></i> 决策参考摘要 (Executive Insight)</h3>
+                    <p><strong>今日研判：</strong> 自智网络标准制定进入深水区，TM Forum 新规对集团 L4 演进路径有直接指导意义；算力网络方面，华为发布的新一代算网大脑架构值得重点关注，建议技术委员会启动对标分析。</p>
+                </div>
+
+                <!-- 卡片1：战略机会 -->
+                <div class="news-card card-type-strategy">
+                    <div class="card-header">
+                        <span class="card-tag tag-strategy">战略机会</span>
+                        <span style="color: #999; font-size: 0.8em;">来源: TM Forum</span>
+                    </div>
+                    <div class="card-title">TM Forum 发布自智网络 (AN) L4 分级标准详细解读</div>
+                    <div class="card-body">
+                        新标准明确了 L4 级别在跨域协同、意图闭环方面的具体KPI要求。这与集团当前推进的“自智网络领航计划”高度契合...
+                    </div>
+                    <div class="ai-insight">
+                        <i class="fas fa-robot ai-icon"></i>
+                        <strong>创新院落地建议：</strong> 建议网管中心尽快对照新标准更新 KPI 考核体系，并由标准组牵头申报相关的行业标准立项。
+                    </div>
+                </div>
+
+                <!-- 卡片2：技术突破 -->
+                <div class="news-card card-type-tech">
+                    <div class="card-header">
+                        <span class="card-tag tag-tech">技术突破</span>
+                        <span style="color: #999; font-size: 0.8em;">来源: Huawei MBB Lab</span>
+                    </div>
+                    <div class="card-title">基于 NetGPT 的核心网信令风暴预测模型实测数据公布</div>
+                    <div class="card-body">
+                        华为 MBB 实验室公布了其 NetGPT 大模型在信令风暴预测场景下的实测数据，准确率提升至 98.5%，提前预测时间延长至 15 分钟...
+                    </div>
+                    <div class="ai-insight">
+                        <i class="fas fa-robot ai-icon"></i>
+                        <strong>技术评估：</strong> 该模型采用的“时序-图神经网络”混合架构具有很高的借鉴意义，建议 AI 研发团队在下一版本 NWDAF 中引入类似算法进行验证。
+                    </div>
+                </div>
+
+                <!-- 卡片3：风险预警 -->
+                <div class="news-card card-type-risk">
+                    <div class="card-header">
+                        <span class="card-tag tag-risk">风险预警</span>
+                        <span style="color: #999; font-size: 0.8em;">来源: ETSI Security</span>
+                    </div>
+                    <div class="card-title">ETSI 发布关于 5G 核心网切片隔离性的安全漏洞预警</div>
+                    <div class="card-body">
+                        ETSI 安全工作组发现，在特定配置下，网络切片之间的资源隔离可能被侧信道攻击绕过，导致用户隐私数据泄露...
+                    </div>
+                    <div class="ai-insight">
+                        <i class="fas fa-robot ai-icon"></i>
+                        <strong>风险提示：</strong> 涉及我省现网部分政企专网切片业务，建议安全部立即开展专项排查，并升级切片隔离策略。
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>
