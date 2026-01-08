@@ -24,6 +24,11 @@ const CarrierDataSource = {
             name: 'Google News - Media (SDxCentral)',
             url: 'https://news.google.com/rss/search?q=site:sdxcentral.com+%22AI%22+when:7d&hl=en-US&gl=US&ceid=US:en',
             category: 'Media'
+        },
+        {
+            name: '邮电设计技术 (WeChat)',
+            url: 'https://rsshub.app/wechat/gzh/ydsjjs', // 使用 RSSHub 生成的 RSS 链接
+            category: 'Academic'
         }
     ],
 
