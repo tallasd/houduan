@@ -1,20 +1,20 @@
 import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateToChineseWithTime, escapeHtml } from '../helpers.js';
 
-const JiqizhixinDataSource = {
+const LightreadingDataSource = {
     fetch: async (env, foloCookie) => {
-        const feedId = env.JIQIZHIXIN_FEED_ID;
-        const fetchPages = parseInt(env.JIQIZHIXIN_FETCH_PAGES || '3', 10);
-        const allJiqizhixinItems = [];
+        const feedId = env.LIGHTREADING_FEED_ID;
+        const fetchPages = parseInt(env.LIGHTREADING_FETCH_PAGES || '3', 10);
+        const allLightreadingItems = [];
         const filterDays = parseInt(env.FOLO_FILTER_DAYS || '3', 10);
 
         if (!feedId) {
-            console.error('JIQIZHIXIN_FEED_ID is not set in environment variables.');
+            console.error('LIGHTREADING_FEED_ID is not set in environment variables.');
             return {
                 version: "https://jsonfeed.org/version/1.1",
-                title: "Jiqizhixin.AI Daily Feeds",
-                home_page_url: "https://www.jiqizhixin.ai",
-                description: "Aggregated Jiqizhixin.AI Daily feeds",
-                language: "zh-cn",
+                title: "Lightreading.AI Daily Feeds",
+                home_page_url: "https://www.lightreading.com/",
+                description: "Aggregated Lightreading.AI Daily feeds",
+                language: "en-US",
                 items: []
             };
         }
@@ -26,7 +26,7 @@ const JiqizhixinDataSource = {
                 'User-Agent': userAgent,
                 'Content-Type': 'application/json',
                 'accept': 'application/json',
-                'accept-language': 'zh-CN,zh;q=0.9',
+                'accept-language': 'zh-CN,zh;q=0.7,en-US;q=0.9',
                 'baggage': 'sentry-environment=stable,sentry-release=5251fa921ef6cbb6df0ac4271c41c2b4a0ce7c50,sentry-public_key=e5bccf7428aa4e881ed5cb713fdff181,sentry-trace_id=2da50ca5ad944cb794670097d876ada8,sentry-sampled=true,sentry-sample_rand=0.06211835167903246,sentry-sample_rate=1',
                 'origin': 'https://app.follow.is',
                 'priority': 'u=1, i',
@@ -56,35 +56,35 @@ const JiqizhixinDataSource = {
             }
 
             try {
-                console.log(`Fetching Jiqizhixin.AI data, page ${i + 1}...`);
+                console.log(`Fetching Lightreading.AI data, page ${i + 1}...`);
                 const response = await fetch(env.FOLO_DATA_API, {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body),
                 });
                 if (!response.ok) {
-                    console.error(`Failed to fetch Jiqizhixin.AI data, page ${i + 1}: ${response.statusText}`);
+                    console.error(`Failed to fetch Lightreading.AI data, page ${i + 1}: ${response.statusText}`);
                     break;
                 }
                 const data = await response.json();
                 if (data && data.data && data.data.length > 0) {
                     const filteredItems = data.data.filter(entry => isDateWithinLastDays(entry.entries.publishedAt, filterDays));
-                    allJiqizhixinItems.push(...filteredItems.map(entry => ({
+                    allLightreadingItems.push(...filteredItems.map(entry => ({
                         id: entry.entries.id,
                         url: entry.entries.url,
                         title: entry.entries.title,
                         content_html: entry.entries.content,
                         date_published: entry.entries.publishedAt,
                         authors: [{ name: entry.entries.author }],
-                        source: `机器之心`,
+                        source: `LightReading`,
                     })));
                     publishedAfter = data.data[data.data.length - 1].entries.publishedAt;
                 } else {
-                    console.log(`No more data for Jiqizhixin.AI, page ${i + 1}.`);
+                    console.log(`No more data for Lightreading.AI, page ${i + 1}.`);
                     break;
                 }
             } catch (error) {
-                console.error(`Error fetching Jiqizhixin.AI data, page ${i + 1}:`, error);
+                console.error(`Error fetching Lightreading.AI data, page ${i + 1}:`, error);
                 break;
             }
 
@@ -94,11 +94,11 @@ const JiqizhixinDataSource = {
 
         return {
             version: "https://jsonfeed.org/version/1.1",
-            title: "Jiqizhixin.AI Daily Feeds",
-            home_page_url: "https://www.jiqizhixin.ai",
-            description: "Aggregated Jiqizhixin.AI Daily feeds",
-            language: "zh-cn",
-            items: allJiqizhixinItems
+            title: "Lightreading.AI Daily Feeds",
+            home_page_url: "https://www.lightreading.com/",
+            description: "Aggregated Lightreading.AI Daily feeds",
+            language: "en-US",
+            items: allLightreadingItems
         };
     },
     transform: (rawData, sourceType) => {
@@ -113,7 +113,7 @@ const JiqizhixinDataSource = {
                     description: stripHtml(item.content_html || ""),
                     published_date: item.date_published,
                     authors: item.authors ? item.authors.map(a => a.name).join(', ') : 'Unknown',
-                    source: item.source || '机器之心',
+                    source: item.source || 'LightReading',
                     details: {
                         content_html: item.content_html || ""
                     }
@@ -133,4 +133,4 @@ const JiqizhixinDataSource = {
     }
 };
 
-export default JiqizhixinDataSource;
+export default LightreadingDataSource;

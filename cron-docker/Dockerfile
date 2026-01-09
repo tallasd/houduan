@@ -49,7 +49,7 @@ ENV OWNER="justlovemaki"
 # 项目名称
 ENV REPO_NAME="CloudFlare-AI-Insight-Daily"
 # 个人访问Token (警告: 不建议硬编码Token，最好通过构建参数或运行时环境变量传入)
-ENV GITHUB_TOKEN="github_pat_xxxxxx"
+ENV GITHUB_TOKEN=""
 # 图片代理路径
 ENV IMG_PROXY_URL="https://autoproxy"
 

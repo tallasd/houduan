@@ -151,7 +151,7 @@ async function* callGeminiChatAPIStream(env, promptText, systemPromptText = null
             const errorBodyText = await response.text();
             let errorData;
             try {
-                errorData = JSON.parse(errorBodyBody);
+                errorData = JSON.parse(errorBodyText);
             } catch (e) {
                 errorData = errorBodyText;
             }
@@ -301,6 +301,13 @@ async function* callGeminiChatAPIStream(env, promptText, systemPromptText = null
     }
 }
 
+function buildOpenAIChatCompletionsUrl(baseUrl) {
+    const trimmed = String(baseUrl || '').trim().replace(/\/+$/, '');
+    if (!trimmed) return '';
+    if (trimmed.endsWith('/v1')) return `${trimmed}/chat/completions`;
+    return `${trimmed}/v1/chat/completions`;
+}
+
 /**
  * Calls the OpenAI Chat API (non-streaming).
  *
@@ -317,7 +324,7 @@ async function callOpenAIChatAPI(env, promptText, systemPromptText = null) {
     if (!env.OPENAI_API_KEY) {
         throw new Error("OPENAI_API_KEY environment variable is not set for OpenAI models.");
     }
-    const url = `${env.OPENAI_API_URL}/v1/chat/completions`;
+    const url = buildOpenAIChatCompletionsUrl(env.OPENAI_API_URL);
     
     const messages = [];
     if (systemPromptText && typeof systemPromptText === 'string' && systemPromptText.trim() !== '') {
@@ -331,7 +338,7 @@ async function callOpenAIChatAPI(env, promptText, systemPromptText = null) {
         model: modelName,
         messages: messages,
         temperature: 1,
-        max_tokens: 2048,
+        max_tokens: 8192,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
@@ -364,12 +371,19 @@ async function callOpenAIChatAPI(env, promptText, systemPromptText = null) {
 
         const data = await response.json();
 
-        if (data.choices && data.choices.length > 0 && data.choices[0].message && data.choices[0].message.content) {
-            return data.choices[0].message.content;
-        } else {
-            console.warn("OpenAI Chat API response format unexpected: No choices or content found.", JSON.stringify(data, null, 2));
-            throw new Error("OpenAI Chat API returned an empty or malformed response.");
+        const choice0 = data?.choices?.[0];
+        const msg = choice0?.message;
+        const content = typeof msg?.content === 'string' ? msg.content : '';
+        const reasoningContent = typeof msg?.reasoning_content === 'string' ? msg.reasoning_content : '';
+        const fallbackText = typeof choice0?.text === 'string' ? choice0.text : '';
+
+        const text = content || reasoningContent || fallbackText;
+        if (text) {
+            return text;
         }
+
+        console.warn("OpenAI Chat API response format unexpected: No choices or content found.", JSON.stringify(data, null, 2));
+        throw new Error("OpenAI Chat API returned an empty or malformed response.");
     } catch (error) {
         if (!(error instanceof Error && error.message.startsWith("OpenAI Chat"))) {
             console.error("Error calling OpenAI Chat API (Non-streaming):", error);
@@ -394,7 +408,7 @@ async function* callOpenAIChatAPIStream(env, promptText, systemPromptText = null
     if (!env.OPENAI_API_KEY) {
         throw new Error("OPENAI_API_KEY environment variable is not set for OpenAI models.");
     }
-    const url = `${env.OPENAI_API_URL}/v1/chat/completions`;
+    const url = buildOpenAIChatCompletionsUrl(env.OPENAI_API_URL);
 
     const messages = [];
     if (systemPromptText && typeof systemPromptText === 'string' && systemPromptText.trim() !== '') {
@@ -408,7 +422,7 @@ async function* callOpenAIChatAPIStream(env, promptText, systemPromptText = null
         model: modelName,
         messages: messages,
         temperature: 1,
-        max_tokens: 2048,
+        max_tokens: 8192,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
@@ -478,9 +492,12 @@ async function* callOpenAIChatAPIStream(env, promptText, systemPromptText = null
                     const parsedChunk = JSON.parse(message);
                     if (parsedChunk.choices && parsedChunk.choices.length > 0) {
                         const delta = parsedChunk.choices[0].delta;
-                        if (delta && delta.content) {
+                        const deltaContent = typeof delta?.content === 'string' ? delta.content : '';
+                        const deltaReasoningContent = typeof delta?.reasoning_content === 'string' ? delta.reasoning_content : '';
+                        const text = deltaContent || deltaReasoningContent;
+                        if (text) {
                             hasYieldedContent = true;
-                            yield delta.content;
+                            yield text;
                         }
                     } else if (parsedChunk.error) {
                         console.error("OpenAI Chat API Stream Error Chunk:", JSON.stringify(parsedChunk.error, null, 2));
@@ -504,9 +521,12 @@ async function* callOpenAIChatAPIStream(env, promptText, systemPromptText = null
                     const parsedChunk = JSON.parse(finalMessage);
                     if (parsedChunk.choices && parsedChunk.choices.length > 0) {
                         const delta = parsedChunk.choices[0].delta;
-                        if (delta && delta.content) {
+                        const deltaContent = typeof delta?.content === 'string' ? delta.content : '';
+                        const deltaReasoningContent = typeof delta?.reasoning_content === 'string' ? delta.reasoning_content : '';
+                        const text = deltaContent || deltaReasoningContent;
+                        if (text) {
                             hasYieldedContent = true;
-                            yield delta.content;
+                            yield text;
                         }
                     } else if (parsedChunk.error) {
                         console.error("OpenAI Chat API Stream Error Chunk:", JSON.stringify(parsedChunk.error, null, 2));

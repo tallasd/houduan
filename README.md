@@ -126,7 +126,7 @@
     [![cookie](docs/images/folo-0.png "img")](docs/images/folo-0.png)
 
 2.  **[Demo 地址](https://ai-daily-demo.justlikemaki.workers.dev/getContentHtml)**
-    * 默认账号密码：root/toor
+    * 默认账号密码：root/password
 ---
 
 ## 📚 更多文档

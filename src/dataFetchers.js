@@ -4,7 +4,13 @@ import GithubTrendingDataSource from './dataSources/github-trending.js';
 import PapersDataSource from './dataSources/papers.js';
 import TwitterDataSource from './dataSources/twitter.js';
 import RedditDataSource from './dataSources/reddit.js';
-
+import CarrierDataSource from './dataSources/carrierSources.js';
+import ComsocDataSource from './dataSources/comsoc.js';
+import LightreadingDataSource from './dataSources/lightreading.js';
+import AliyunDataSource from './dataSources/aliyun.js';
+import HuaweiDataSource from './dataSources/huawei.js';
+import AiyuanshengDataSource from './dataSources/ai-yuanshengsuanli.js';
+import TelecomReportDataSource from './dataSources/telecom-report.js';
 
 // Register data sources as arrays to support multiple sources per type
 export const dataSources = {
@@ -12,6 +18,9 @@ export const dataSources = {
     project: { name: '项目', sources: [GithubTrendingDataSource] },
     paper: { name: '论文', sources: [PapersDataSource] },
     socialMedia: { name: '社交平台', sources: [TwitterDataSource, RedditDataSource] },
+    AIopsMedia: { name: 'AIOPS', sources: [ComsocDataSource, LightreadingDataSource, AliyunDataSource, HuaweiDataSource, AiyuanshengDataSource] },
+    telecomReport: { name: '通信报告', sources: [TelecomReportDataSource] },
+    carrier: { name: '运营商情报', sources: [CarrierDataSource] },
     // Add new data sources here as arrays, e.g.,
     // newType: { name: '新类型', sources: [NewTypeDataSource1, NewTypeDataSource2] },
 };

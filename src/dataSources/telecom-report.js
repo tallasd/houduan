@@ -1,20 +1,21 @@
-import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateToChineseWithTime, escapeHtml } from '../helpers.js';
+import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateToChineseWithTime, escapeHtml } from '../helpers';
 
-const JiqizhixinDataSource = {
-    fetch: async (env, foloCookie) => {
-        const feedId = env.JIQIZHIXIN_FEED_ID;
-        const fetchPages = parseInt(env.JIQIZHIXIN_FETCH_PAGES || '3', 10);
-        const allJiqizhixinItems = [];
+const TelecomReportDataSource = {
+    type: 'telecom-report',
+    async fetch(env, foloCookie) {
+        const listId = env.TELECOM_REPORT_LIST_ID;
+        const fetchPages = parseInt(env.TELECOM_REPORT_FETCH_PAGES || '1', 10);
+        const allItems = [];
         const filterDays = parseInt(env.FOLO_FILTER_DAYS || '3', 10);
 
-        if (!feedId) {
-            console.error('JIQIZHIXIN_FEED_ID is not set in environment variables.');
+        if (!listId) {
+            console.warn('TELECOM_REPORT_LIST_ID is not set in environment variables. Skipping telecom report fetch.');
             return {
                 version: "https://jsonfeed.org/version/1.1",
-                title: "Jiqizhixin.AI Daily Feeds",
-                home_page_url: "https://www.jiqizhixin.ai",
-                description: "Aggregated Jiqizhixin.AI Daily feeds",
-                language: "zh-cn",
+                title: "Telecom Reports",
+                home_page_url: "https://example.com/telecom-reports",
+                description: "Aggregated telecom industry reports",
+                language: "en-US",
                 items: []
             };
         }
@@ -40,13 +41,12 @@ const JiqizhixinDataSource = {
                 'x-app-version': '0.4.9',
             };
 
-            // 直接使用传入的 foloCookie
             if (foloCookie) {
                 headers['Cookie'] = foloCookie;
             }
 
             const body = {
-                feedId: feedId,
+                listId: listId,
                 view: 1,
                 withContent: true,
             };
@@ -56,71 +56,70 @@ const JiqizhixinDataSource = {
             }
 
             try {
-                console.log(`Fetching Jiqizhixin.AI data, page ${i + 1}...`);
+                console.log(`Fetching Telecom Reports data, page ${i + 1}...`);
                 const response = await fetch(env.FOLO_DATA_API, {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body),
                 });
+
                 if (!response.ok) {
-                    console.error(`Failed to fetch Jiqizhixin.AI data, page ${i + 1}: ${response.statusText}`);
+                    console.error(`Failed to fetch Telecom Reports data, page ${i + 1}: ${response.statusText}`);
                     break;
                 }
                 const data = await response.json();
                 if (data && data.data && data.data.length > 0) {
                     const filteredItems = data.data.filter(entry => isDateWithinLastDays(entry.entries.publishedAt, filterDays));
-                    allJiqizhixinItems.push(...filteredItems.map(entry => ({
+                    allItems.push(...filteredItems.map(entry => ({
                         id: entry.entries.id,
                         url: entry.entries.url,
                         title: entry.entries.title,
                         content_html: entry.entries.content,
                         date_published: entry.entries.publishedAt,
                         authors: [{ name: entry.entries.author }],
-                        source: `机器之心`,
+                        source: entry.entries.author ? `${entry.feeds.title} - ${entry.entries.author}` : entry.feeds.title,
                     })));
                     publishedAfter = data.data[data.data.length - 1].entries.publishedAt;
                 } else {
-                    console.log(`No more data for Jiqizhixin.AI, page ${i + 1}.`);
+                    console.log(`No more data for Telecom Reports, page ${i + 1}.`);
                     break;
                 }
             } catch (error) {
-                console.error(`Error fetching Jiqizhixin.AI data, page ${i + 1}:`, error);
+                console.error(`Error fetching Telecom Reports data, page ${i + 1}:`, error);
                 break;
             }
 
-            // Random wait time between 0 and 5 seconds to avoid rate limiting
             await sleep(Math.random() * 5000);
         }
 
         return {
             version: "https://jsonfeed.org/version/1.1",
-            title: "Jiqizhixin.AI Daily Feeds",
-            home_page_url: "https://www.jiqizhixin.ai",
-            description: "Aggregated Jiqizhixin.AI Daily feeds",
-            language: "zh-cn",
-            items: allJiqizhixinItems
+            title: "Telecom Reports",
+            home_page_url: "https://example.com/telecom-reports",
+            description: "Aggregated telecom industry reports",
+            language: "en-US",
+            items: allItems
         };
     },
-    transform: (rawData, sourceType) => {
-        const unifiedNews = [];
-        if (rawData && Array.isArray(rawData.items)) {
-            rawData.items.forEach((item) => {
-                unifiedNews.push({
-                    id: item.id,
-                    type: sourceType,
-                    url: item.url,
-                    title: item.title,
-                    description: stripHtml(item.content_html || ""),
-                    published_date: item.date_published,
-                    authors: item.authors ? item.authors.map(a => a.name).join(', ') : 'Unknown',
-                    source: item.source || '机器之心',
-                    details: {
-                        content_html: item.content_html || ""
-                    }
-                });
-            });
+
+    transform(rawData, sourceType) {
+        if (!rawData || !rawData.items) {
+            return [];
         }
-        return unifiedNews;
+
+        return rawData.items.map(item => ({
+            id: item.id,
+            type: sourceType,
+            url: item.url,
+            title: item.title,
+            description: stripHtml(item.content_html || ""),
+            published_date: item.date_published,
+            authors: item.authors ? item.authors.map(author => author.name).join(', ') : 'Unknown',
+            source: item.source || 'Telecom Reports',
+            details: {
+                content_html: item.content_html || ""
+            }
+        }));
     },
 
     generateHtml: (item) => {
@@ -133,4 +132,5 @@ const JiqizhixinDataSource = {
     }
 };
 
-export default JiqizhixinDataSource;
+export default TelecomReportDataSource;
+

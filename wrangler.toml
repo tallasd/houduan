@@ -5,22 +5,35 @@ compatibility_date = "2025-05-20" # Or your project's compatibility date
 workers_dev = true
 
 kv_namespaces = [
-  { binding = "DATA_KV", id = "kv数据库的ID" }
+  { binding = "DATA_KV", id = "3f952847a0f34a208f8f86dc10c42a3c", preview_id = "166410eae76d46a8950c06afaef089f1" }
 ]
 
 [vars]
 IMG_PROXY = ""  #图片代理链接，用于处理图片不显示
 OPEN_TRANSLATE = "true"
-USE_MODEL_PLATFORM = "GEMINI" #GEMINI, OPEN
-GEMINI_API_KEY = "xxxxxx-xxxxxx"
+USE_MODEL_PLATFORM = "OPEN" #GEMINI, OPEN
+GEMINI_API_KEY = "REPLACE_ME"
 GEMINI_API_URL = "https://api-proxy.me/gemini" #网上公共的代理api
 DEFAULT_GEMINI_MODEL = "gemini-2.5-flash-preview-05-20"
-OPENAI_API_KEY = "sk-xxxxxx" # Replace with your actual OpenAI API Key
-OPENAI_API_URL = "https://api.deepseek.com" # Or your OpenAI compatible API URL
-DEFAULT_OPEN_MODEL = "deepseek-chat"
-FOLO_COOKIE_KV_KEY = "folo_auth_cookie" 
+OPENAI_API_KEY = ""
+OPENAI_API_URL = "https://once.novai.su/v1" # OpenAI compatible API URL
+DEFAULT_OPEN_MODEL = "[次]gemini-3-pro-preview"
+ENABLE_MINDMAP_TAGGING = "true"
+MINDMAP_TAGGING_BATCH_SIZE = "8"
+MINDMAP_TAGGING_MAX_ITEMS_PER_CATEGORY = "40"
+FOLO_COOKIE_KV_KEY = "" 
 FOLO_DATA_API = "https://api.follow.is/entries"
 FOLO_FILTER_DAYS = 1
+#其他内容源 ID 和抓取页数
+COMSOC_FEED_ID = "76796796930386944" 
+COMSOC_FETCH_PAGES = "2"
+LIGHTREADING_FEED_ID = "224028447407708160"
+LIGHTREADING_FETCH_PAGES = "2"
+ALIYUN_FEED_ID = "187702008971600900"
+ALIYUN_FETCH_PAGES = "2"
+HUAWEI_RSS_URL = "http://rss.jintiankansha.me/rss/GE2DSMBUHB6DKNBQMZQWMMZWMUYWGYLFHBTGGZTBMM2WCODCMMYTSMLDGQ3TGMZUGFQTONZXGUZA===="
+AI_SUANLIJIAGOU_RSS_URL = "http://rss.jintiankansha.me/rss/GM2DKNJRGJ6DAYRTG4ZTENTGGZQTKYRWMMYWKNLDMVRTOOLBGM2WGNRYHA2GEZBZHA4DONBQG44Q===="
+#标准内容源 ID 和抓取页数
 NEWS_AGGREGATOR_LIST_ID = "158437828119024640" 
 NEWS_AGGREGATOR_FETCH_PAGES = "1" 
 HGPAPERS_LIST_ID = "158437917409783808"
@@ -29,13 +42,15 @@ TWITTER_LIST_ID = "153028784690326528"
 TWITTER_FETCH_PAGES = "1" 
 REDDIT_LIST_ID = "167576006499975168" 
 REDDIT_FETCH_PAGES = "1" 
+TELECOM_REPORT_LIST_ID = ""
+TELECOM_REPORT_FETCH_PAGES = "1"
 PROJECTS_API_URL = "https://git-trending.justlikemaki.vip/topone/?since=daily"
-GITHUB_TOKEN = "github_pat_xxxxxx"
-GITHUB_REPO_OWNER = "justlovemaki"
-GITHUB_REPO_NAME = "CloudFlare-AI-Insight-Daily"
+GITHUB_TOKEN = ""
+GITHUB_REPO_OWNER = "tallasd"
+GITHUB_REPO_NAME = "aizixun"
 GITHUB_BRANCH = "main"
 LOGIN_USERNAME = "root"
-LOGIN_PASSWORD = "toor"
+LOGIN_PASSWORD = ""
 DAILY_TITLE = "AI洞察日报"
 DAILY_TITLE_MIN = " `AI 日报` "
 PODCAST_TITLE = "来生小酒馆"
