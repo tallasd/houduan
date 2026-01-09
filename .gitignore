@@ -1,0 +1,11 @@
+node_modules/
+.wrangler/
+.dev.vars
+.env
+.env.*
+dist/
+build/
+coverage/
+*.log
+.DS_Store
+worker_output.log
